@@ -64,13 +64,8 @@ class ExcelLogic:
         return None, None, None
 
     def generate_ensays_data(self, ensay_rows, total_rows_to_iter, signal):
-        from tqdm import tqdm
-
         ensay_results = {x: [] for x in range(len(ensay_rows))}
-        pbar = tqdm(total=total_rows_to_iter)
         for row_idx, row in enumerate(self.ws.iter_rows()):
-            pbar.update(1)
-            signal.emit([int((row_idx + 1) / total_rows_to_iter * 100), ensay_rows])
             if row_idx == 0:
                 continue
             row = [x.value for x in row]
@@ -86,7 +81,7 @@ class ExcelLogic:
                     total_ends += 1
             if total_ends >= len(ensay_rows):
                 break
-        pbar.close()
+            signal.emit([int((row_idx + 1) / total_rows_to_iter * 100), ensay_rows])
         return ensay_results
 
     def calculate_ensys(self, master_column, duration, offset, num_ensays, out_name, signal):
