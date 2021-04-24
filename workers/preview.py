@@ -11,5 +11,5 @@ class PreviewTaskThread(QtCore.QThread):
         self.mw = mw
 
     def run(self):
-        self.mw.el.load_preview()
+        self.mw.el.load_preview(self.mw.file)
         self.finished.emit()

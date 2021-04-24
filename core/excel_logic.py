@@ -14,8 +14,8 @@ class ExcelLogic:
         self.ws = None
         self.preview = None
 
-    def load_preview(self, n=250):
-        wb = load_workbook("output.xlsx", read_only=True)
+    def load_preview(self, file_name, n=250):
+        wb = load_workbook(file_name, read_only=True)
         self.ws = wb.active
         return_prev = []
         for row_idx, row in enumerate(self.ws.iter_rows()):

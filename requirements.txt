@@ -1,5 +1,4 @@
 PyInstaller
-pandas==1.2.4
 PyQt5==5.15.4
 PyQt5-stubs==5.15.2.0
 openpyxl==3.0.7

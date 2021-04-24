@@ -1,19 +1,17 @@
 import sys
-import os
-
-from PyQt5 import QtWidgets, QtGui
+import tempfile
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from views.ensayator_ui import Ui_MainWindow
 from views.models.table_models import TableModel
 from dialogs.in_progress_dialog import InProgressDialog
-import faulthandler
 from workers.preview import PreviewTaskThread
 from workers.calculate import CalculateTaskThread
 from core.excel_logic import ExcelLogic
 import time
 from datetime import datetime
-
-faulthandler.enable()
+from views.app_icon import create_app_icon
+import PyQt5.sip
 
 
 class Ensayator(Ui_MainWindow):
@@ -21,8 +19,7 @@ class Ensayator(Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         self.setupUi(dialog)
 
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("ico.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        icon = create_app_icon()
         MainWindow.setWindowIcon(icon)
 
         self.btnLoadFile.clicked.connect(self.load_file)
@@ -132,6 +129,8 @@ class Ensayator(Ui_MainWindow):
 
 
 if __name__ == '__main__':
+    sys.stdout = tempfile.TemporaryFile()
+    sys.stderr = tempfile.TemporaryFile()
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     pos = Ensayator(MainWindow)

@@ -111,13 +111,3 @@ class Ui_MainWindow(object):
         self.lblEtaTitle.setText(_translate("MainWindow", "Tiempo restante:"))
         self.lblDuration.setText(_translate("MainWindow", "00:00:00"))
         self.lblDurationTitle.setText(_translate("MainWindow", "Tiempo transcurrido:"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
