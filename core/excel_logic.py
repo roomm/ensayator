@@ -115,7 +115,6 @@ class ExcelLogic:
         Path("ensay_outputs").mkdir(exist_ok=True, parents=True)
         results_statics = []
         for eidx, edr in ensay_results.items():
-            signal.emit([int((eidx + 1) / len(ensay_results) * 100), ensays_dates])
             wb = Workbook(write_only=True)
             ws = wb.create_sheet()
             ws.append(column_names)
@@ -123,4 +122,5 @@ class ExcelLogic:
                 ws.append(dr)
             wb.save("ensay_outputs" + os.sep + f"{out_name}_{eidx + 1}.xlsx")
             results_statics.append([ensays_dates[eidx][0], ensays_dates[eidx][1], ensays_dates[eidx][2], len(edr)])
+            signal.emit([int((eidx + 1) / len(ensay_results) * 100), ensays_dates])
         return results_statics
