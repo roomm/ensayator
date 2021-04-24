@@ -40,6 +40,7 @@ class Ensayator(Ui_MainWindow):
         self.ensayRows = []
         self.startCalcAt = None
         self.set_input_state(False)
+        self.intervalSet = False
 
     def set_input_state(self, state):
         self.cbSelectColumn.setEnabled(state)
@@ -79,6 +80,7 @@ class Ensayator(Ui_MainWindow):
         self.set_input_state(True)
 
     def execute_calc(self):
+        self.intervalSet = False
         self.set_input_state(False)
         self.lblDuration.setVisible(True)
         self.lblDurationTitle.setVisible(True)
@@ -95,33 +97,36 @@ class Ensayator(Ui_MainWindow):
         self.calcWorker.start()
 
     def finished_calc(self):
-        self.set_table_intervals(self.ensayRows)
         self.set_input_state(True)
 
     def calculate_signal_accept(self, msg):
+        if not self.intervalSet:
+            self.set_table_intervals(msg[1])
+
         progress = int(msg[0])
         self.pbProgress.setValue(progress)
-        self.set_table_intervals(msg[1])
         current = datetime.now()
         st_time = time.mktime(self.startCalcAt.timetuple())
         nd_time = time.mktime(current.timetuple())
 
         elapsed = int(nd_time - st_time)
-        remaining = ((elapsed * 100) / progress) - elapsed
         self.lblDuration.setText(time.strftime('%H:%M:%S', time.gmtime(elapsed)))
-        self.lblEta.setText(time.strftime('%H:%M:%S', time.gmtime(remaining)))
+
+        if progress > 0:
+            remaining = ((elapsed * 100) / progress) - elapsed
+            self.lblEta.setText(time.strftime('%H:%M:%S', time.gmtime(remaining)))
 
     def set_table_intervals(self, ensay_rows):
-        self.tblPreview.reset()
+        self.intervalSet = True
         out_rows = [["#", "SIN MARGEN", "START", "END", "DURATION"]]
-        for ors in ensay_rows:
-            st_rw = ors[2]
-            nd_rw = ors[3]
+        for num, ors in enumerate(ensay_rows):
+            st_rw = ors[0]
+            nd_rw = ors[1]
             st_time = time.mktime(st_rw.timetuple())
             nd_time = time.mktime(nd_rw.timetuple())
             dur = int(nd_time - st_time) / 60
+            out_rows.append([num + 1, ors[2].strftime("%Y/%m/%d %H:%M:%S"), ors[0].strftime("%Y/%m/%d %H:%M:%S"), ors[1].strftime("%Y/%m/%d %H:%M:%S"), dur])
 
-            out_rows.append([ors[0], ors[1].strftime("%Y/%m/%d %H:%M:%S"), ors[2].strftime("%Y/%m/%d %H:%M:%S"), ors[3].strftime("%Y/%m/%d %H:%M:%S"), dur])
         model = TableModel(out_rows)
         self.tblPreview.setModel(model)
 
