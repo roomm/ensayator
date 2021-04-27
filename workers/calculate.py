@@ -15,7 +15,7 @@ class CalculateTaskThread(QtCore.QThread):
             self.mw.cbSelectColumn.currentText(),
             self.mw.sbDuration.value(),
             self.mw.sbOffset.value(),
-            self.mw.sbCycles.value(),
+            int(self.mw.txtCycles.text()),
             self.mw.txtOutName.text(),
             self.notifyProgress
         )

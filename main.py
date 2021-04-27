@@ -1,4 +1,5 @@
 import sys
+import math
 import tempfile
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
@@ -21,9 +22,10 @@ class Ensayator(Ui_MainWindow):
 
         icon = create_app_icon()
         MainWindow.setWindowIcon(icon)
-
         self.btnLoadFile.clicked.connect(self.load_file)
         self.btnCalc.clicked.connect(self.execute_calc)
+        self.sbTotalEnsay.valueChanged.connect(self.calc_cycles)
+        self.txtCycles.setReadOnly(True)
         self.pbProgress.setVisible(False)
         self.lblEtaTitle.setVisible(False)
         self.lblEta.setVisible(False)
@@ -36,23 +38,35 @@ class Ensayator(Ui_MainWindow):
         self.el = None
         self.ensayRows = []
         self.startCalcAt = None
-        self.set_input_state(False)
+        self.set_input_state(False, False)
         self.intervalSet = False
 
-    def set_input_state(self, state):
+    def calc_cycles(self):
+        try:
+            nw_time = self.sbTotalEnsay.value()
+            minutes = nw_time * 60
+            cycles = int(math.ceil(minutes / self.sbDuration.value()))
+            self.txtCycles.setText(str(cycles))
+            if cycles > 0:
+                self.btnCalc.setEnabled(True)
+        except:
+            self.txtCycles.setText(str(0))
+
+    def set_input_state(self, state, calc_state=False):
         self.cbSelectColumn.setEnabled(state)
-        self.sbCycles.setEnabled(state)
+        self.sbTotalEnsay.setEnabled(state)
         self.sbOffset.setEnabled(state)
         self.sbDuration.setEnabled(state)
-        self.btnCalc.setEnabled(state)
         self.txtOutName.setEnabled(state)
+        self.btnCalc.setEnabled(calc_state)
+        self.txtCycles.setEnabled(state)
 
     def load_file(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getOpenFileName(self.centralwidget, "Seleccionar Excel", "", "Excel (*.xlsx)", options=options)
         if file_name:
-            self.set_input_state(False)
+            self.set_input_state(False, False)
             self.txtOutName.setText(file_name.split("/")[-1].replace(".xlsx", ""))
             self.el = ExcelLogic(file_name)
             self.file = file_name
@@ -74,11 +88,11 @@ class Ensayator(Ui_MainWindow):
         self.p_dialog.close()
         for cl in self.el.preview[0]:
             self.cbSelectColumn.addItem(cl)
-        self.set_input_state(True)
+        self.set_input_state(True, False)
 
     def execute_calc(self):
         self.intervalSet = False
-        self.set_input_state(False)
+        self.set_input_state(False, False)
         self.lblDuration.setVisible(True)
         self.lblDurationTitle.setVisible(True)
         self.lblDuration.setText("00:00:00")
@@ -94,7 +108,7 @@ class Ensayator(Ui_MainWindow):
         self.calcWorker.start()
 
     def finished_calc(self):
-        self.set_input_state(True)
+        self.set_input_state(True, True)
 
     def calculate_signal_accept(self, msg):
         if not self.intervalSet:

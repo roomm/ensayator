@@ -33,6 +33,8 @@ class ExcelLogic:
         cols_reps = {}
         final_cols = []
         for col in cols:
+            if col is None:
+                col = "NULL"
             if col not in final_cols:
                 final_cols.append(col)
                 cols_reps[col] = 0
@@ -71,7 +73,11 @@ class ExcelLogic:
             row = [x.value for x in row]
             rd = row[0]
             #  year, month=None, day=None, hour=0, minute=0, second=0
-            cur_date = datetime(int(rd[0:4]), int(rd[5:7]), int(rd[8:10]), int(rd[11:13]), int(rd[14:16]), int(rd[17:19]))
+            # cur_date = datetime(int(rd[0:4]), int(rd[5:7]), int(rd[8:10]), int(rd[11:13]), int(rd[14:16]), int(rd[17:19]))
+            cur_date = rd
+            if not isinstance(rd, datetime):
+                cur_date = parse(rd)
+
             total_ends = 0
             for ensay_idx, erow in enumerate(ensay_rows):
                 if erow[0] <= cur_date <= erow[1]:
@@ -86,7 +92,9 @@ class ExcelLogic:
 
     def calculate_ensys(self, master_column, duration, offset, num_ensays, out_name, signal):
         ensay_start, column_names, first_data = self.detect_ensay_start(master_column)
-        ensay_start_date = parse(ensay_start[0])
+        ensay_start_date = ensay_start[0]
+        if not isinstance(ensay_start[0], datetime):
+            ensay_start_date = parse(ensay_start[0])
         ensays_dates = []
         for idx, num in enumerate(range(1, num_ensays + 1)):
             st_wo_offset = ensay_start_date + timedelta(minutes=(duration * (num - 1)))
@@ -96,7 +104,10 @@ class ExcelLogic:
             end_date = parse(end_date.strftime("%Y-%m-%d %H:%M:00"))
             ensays_dates.append((start_date, end_date, st_wo_offset))
 
-        z_time = time.mktime(parse(first_data[0]).timetuple())
+        first_data_time = first_data[0]
+        if not isinstance(first_data_time, datetime):
+            first_data_time = parse(first_data_time)
+        z_time = time.mktime(first_data_time.timetuple())
 
         st_time = time.mktime(ensays_dates[0][0].timetuple())
         nd_time = time.mktime(ensays_dates[0][1].timetuple())
