@@ -2,6 +2,6 @@
 .venv
 venv
 ensay_outputs
-output.xlsx
+*.xlsx
 caca_dates.py
 ensay_test.py

@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>1003</width>
-    <height>591</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1003</width>
-    <height>591</height>
+    <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>1003</width>
-    <height>591</height>
+    <height>600</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -58,7 +58,7 @@
       <x>20</x>
       <y>50</y>
       <width>661</width>
-      <height>511</height>
+      <height>521</height>
      </rect>
     </property>
    </widget>
@@ -115,7 +115,7 @@
     <property name="geometry">
      <rect>
       <x>700</x>
-      <y>300</y>
+      <y>420</y>
       <width>291</width>
       <height>25</height>
      </rect>
@@ -128,7 +128,7 @@
     <property name="geometry">
      <rect>
       <x>700</x>
-      <y>340</y>
+      <y>460</y>
       <width>291</width>
       <height>23</height>
      </rect>
@@ -197,7 +197,7 @@
     <property name="geometry">
      <rect>
       <x>910</x>
-      <y>380</y>
+      <y>500</y>
       <width>81</width>
       <height>20</height>
      </rect>
@@ -213,7 +213,7 @@
     <property name="geometry">
      <rect>
       <x>700</x>
-      <y>380</y>
+      <y>500</y>
       <width>171</width>
       <height>17</height>
      </rect>
@@ -226,7 +226,7 @@
     <property name="geometry">
      <rect>
       <x>910</x>
-      <y>420</y>
+      <y>540</y>
       <width>81</width>
       <height>20</height>
      </rect>
@@ -242,7 +242,7 @@
     <property name="geometry">
      <rect>
       <x>700</x>
-      <y>420</y>
+      <y>540</y>
       <width>171</width>
       <height>17</height>
      </rect>
@@ -254,14 +254,14 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>960</x>
-      <y>550</y>
+      <x>950</x>
+      <y>10</y>
       <width>41</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
-     <string>v1.0.2</string>
+     <string>v2.0.0</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="sbTotalEnsay">
@@ -333,6 +333,96 @@
       <y>220</y>
       <width>61</width>
       <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="cbEnableRepetitions">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>300</y>
+      <width>92</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Repetir </string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="sbWaiting">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>340</y>
+      <width>61</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>999</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblWaitingUnit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>340</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>min</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblWaiting">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>340</y>
+      <width>121</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Tiempo Espera</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRepetitions">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>380</y>
+      <width>121</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Repeticiones</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="sbRepetitions">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>380</y>
+      <width>61</width>
+      <height>26</height>
      </rect>
     </property>
    </widget>

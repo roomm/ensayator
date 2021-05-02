@@ -25,6 +25,7 @@ class Ensayator(Ui_MainWindow):
         self.btnLoadFile.clicked.connect(self.load_file)
         self.btnCalc.clicked.connect(self.execute_calc)
         self.sbTotalEnsay.valueChanged.connect(self.calc_cycles)
+        self.cbEnableRepetitions.stateChanged.connect(self.set_repetitions_state)
         self.txtCycles.setReadOnly(True)
         self.pbProgress.setVisible(False)
         self.lblEtaTitle.setVisible(False)
@@ -53,6 +54,7 @@ class Ensayator(Ui_MainWindow):
             self.txtCycles.setText(str(0))
 
     def set_input_state(self, state, calc_state=False):
+        self.cbEnableRepetitions.setEnabled(state)
         self.cbSelectColumn.setEnabled(state)
         self.sbTotalEnsay.setEnabled(state)
         self.sbOffset.setEnabled(state)
@@ -60,6 +62,14 @@ class Ensayator(Ui_MainWindow):
         self.txtOutName.setEnabled(state)
         self.btnCalc.setEnabled(calc_state)
         self.txtCycles.setEnabled(state)
+
+    def set_repetitions_state(self):
+        state = self.cbEnableRepetitions.isChecked()
+        self.lblRepetitions.setEnabled(state)
+        self.lblWaiting.setEnabled(state)
+        self.lblWaitingUnit.setEnabled(state)
+        self.sbRepetitions.setEnabled(state)
+        self.sbWaiting.setEnabled(state)
 
     def load_file(self):
         options = QFileDialog.Options()
@@ -109,6 +119,7 @@ class Ensayator(Ui_MainWindow):
 
     def finished_calc(self):
         self.set_input_state(True, True)
+        self.set_table_intervals(self.ensayRows)
 
     def calculate_signal_accept(self, msg):
         if not self.intervalSet:

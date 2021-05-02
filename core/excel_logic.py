@@ -75,6 +75,9 @@ class ExcelLogic:
             #  year, month=None, day=None, hour=0, minute=0, second=0
             # cur_date = datetime(int(rd[0:4]), int(rd[5:7]), int(rd[8:10]), int(rd[11:13]), int(rd[14:16]), int(rd[17:19]))
             cur_date = rd
+            if cur_date is None:
+                # NO MORE DATA (BAD # CYCLES INPUT)
+                break
             if not isinstance(rd, datetime):
                 cur_date = parse(rd)
 
@@ -121,12 +124,15 @@ class ExcelLogic:
         Path("ensay_outputs").mkdir(exist_ok=True, parents=True)
         results_statics = []
         for eidx, edr in ensay_results.items():
+            if not edr:
+                continue
             wb = Workbook(write_only=True)
             ws = wb.create_sheet()
             ws.append(column_names)
             for dr in edr:
                 ws.append(dr)
             wb.save("ensay_outputs" + os.sep + f"{out_name}_{eidx + 1}.xlsx")
-            results_statics.append([ensays_dates[eidx][0], ensays_dates[eidx][1], ensays_dates[eidx][2], len(edr)])
+            results_statics.append([ensays_dates[eidx][0], parse(edr[-1][0]), ensays_dates[eidx][2], len(edr)])
             signal.emit([int((eidx + 1) / len(ensay_results) * 100), ensays_dates])
+        signal.emit([100, ensays_dates])
         return results_statics
