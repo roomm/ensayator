@@ -160,7 +160,13 @@ class Ensayator(Ui_MainWindow):
             st_time = time.mktime(st_rw.timetuple())
             nd_time = time.mktime(nd_rw.timetuple())
             dur = int(nd_time - st_time) / 60
-            out_rows.append([num + 1, ors[2].strftime("%Y/%m/%d %H:%M:%S"), ors[0].strftime("%Y/%m/%d %H:%M:%S"), ors[1].strftime("%Y/%m/%d %H:%M:%S"), dur])
+            no_margin = ors[2].strftime("%Y/%m/%d %H:%M:%S")
+            start = ors[0].strftime("%Y/%m/%d %H:%M:%S")
+            end = ""
+            if ors[1]:
+                end = ors[1].strftime("%Y/%m/%d %H:%M:%S")
+
+            out_rows.append([num + 1, no_margin, start, end, dur])
 
         model = TableModel(out_rows)
         self.tblPreview.setModel(model)

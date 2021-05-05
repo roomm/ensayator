@@ -137,7 +137,13 @@ class ExcelLogic:
             for dr in edr:
                 ws.append(dr)
             wb.save("ensay_outputs" + os.sep + f"{out_name}_{eidx + 1}.xlsx")
-            results_statics.append([ensays_dates[eidx][0], parse(edr[-1][0]), ensays_dates[eidx][2], len(edr)])
+
+            last_tm = None
+            if isinstance(edr[-1][0], datetime):
+                last_tm = edr[-1][0]
+            elif edr[-1][0] is not None:
+                last_tm = parse(edr[-1][0])
+            results_statics.append([ensays_dates[eidx][0], last_tm, ensays_dates[eidx][2], len(edr)])
             signal.emit([int((eidx + 1) / len(ensay_results) * 100), ensays_dates])
         signal.emit([100, ensays_dates])
         return results_statics
