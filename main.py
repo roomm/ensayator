@@ -1,11 +1,13 @@
 import sys
 import math
 import tempfile
-from PyQt5 import QtWidgets
+import traceback
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QFileDialog
 from views.ensayator_ui import Ui_MainWindow
 from views.models.table_models import TableModel
 from dialogs.in_progress_dialog import InProgressDialog
+from dialogs.exception_dialog import ExceptionDialog
 from workers.preview import PreviewTaskThread
 from workers.calculate import CalculateTaskThread
 from core.excel_logic import ExcelLogic
@@ -14,6 +16,8 @@ from datetime import datetime
 from views.app_icon import create_app_icon
 import PyQt5.sip
 
+
+# https://stackoverflow.com/questions/55819330/catching-exceptions-raised-in-qapplication
 
 class Ensayator(Ui_MainWindow):
     def __init__(self, dialog):
@@ -25,13 +29,8 @@ class Ensayator(Ui_MainWindow):
         self.btnLoadFile.clicked.connect(self.load_file)
         self.btnCalc.clicked.connect(self.execute_calc)
         self.sbTotalEnsay.valueChanged.connect(self.calc_cycles)
-        self.cbEnableRepetitions.stateChanged.connect(self.set_repetitions_state)
+        # self.cbEnableRepetitions.stateChanged.connect(self.set_repetitions_state)
         self.txtCycles.setReadOnly(True)
-        self.pbProgress.setVisible(False)
-        self.lblEtaTitle.setVisible(False)
-        self.lblEta.setVisible(False)
-        self.lblDuration.setVisible(False)
-        self.lblDurationTitle.setVisible(False)
         self.file = None
         self.p_dialog = None
         self.previewWorker = None
@@ -40,6 +39,7 @@ class Ensayator(Ui_MainWindow):
         self.ensayRows = []
         self.startCalcAt = None
         self.set_input_state(False, False)
+        self.set_progress_state(False)
         self.intervalSet = False
 
     def calc_cycles(self):
@@ -53,9 +53,17 @@ class Ensayator(Ui_MainWindow):
         except:
             self.txtCycles.setText(str(0))
 
+    def set_progress_state(self, state):
+        self.pbProgress.setVisible(state)
+        self.lblEtaTitle.setVisible(state)
+        self.lblEta.setVisible(state)
+        self.lblDuration.setVisible(state)
+        self.lblDurationTitle.setVisible(state)
+
     def set_input_state(self, state, calc_state=False):
         self.cbEnableRepetitions.setEnabled(state)
         self.cbSelectColumn.setEnabled(state)
+        self.sbScale.setEnabled(state)
         self.sbTotalEnsay.setEnabled(state)
         self.sbOffset.setEnabled(state)
         self.sbDuration.setEnabled(state)
@@ -103,19 +111,24 @@ class Ensayator(Ui_MainWindow):
     def execute_calc(self):
         self.intervalSet = False
         self.set_input_state(False, False)
-        self.lblDuration.setVisible(True)
-        self.lblDurationTitle.setVisible(True)
+        self.set_progress_state(True)
         self.lblDuration.setText("00:00:00")
-        self.lblEtaTitle.setVisible(True)
-        self.lblEta.setVisible(True)
         self.lblEta.setText("ND")
-        self.startCalcAt = datetime.now()
         self.pbProgress.setValue(0)
-        self.pbProgress.setVisible(True)
+        self.startCalcAt = datetime.now()
         self.calcWorker = CalculateTaskThread(mw=self)
         self.calcWorker.notifyProgress.connect(self.calculate_signal_accept)
         self.calcWorker.finished.connect(self.finished_calc)
+        self.calcWorker.task_failed.connect(self.failed_calc)
         self.calcWorker.start()
+
+    def failed_calc(self, msg):
+        ed = ExceptionDialog(self.centralwidget)
+        ed.set_error_msg(msg)
+        ed.show()
+        self.set_input_state(True, True)
+        self.set_progress_state(False)
+        self.set_table_intervals(self.ensayRows)
 
     def finished_calc(self):
         self.set_input_state(True, True)

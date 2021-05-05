@@ -23,6 +23,8 @@ class ExcelLogic:
             if row_idx == 0:
                 return_prev.append(self.format_column_names(row))
                 continue
+            if isinstance(row[0], datetime):
+                row[0] = row[0].strftime("%Y-%m-%d %H:%M:%S")
             return_prev.append(row)
             if row_idx >= n:
                 break
@@ -93,8 +95,11 @@ class ExcelLogic:
             signal.emit([int((row_idx + 1) / total_rows_to_iter * 100), ensay_rows])
         return ensay_results
 
-    def calculate_ensys(self, master_column, duration, offset, num_ensays, out_name, signal):
-        ensay_start, column_names, first_data = self.detect_ensay_start(master_column)
+    def calculate_ensys(self, master_column, scale, duration, offset, num_ensays, out_name, signal, error_signal):
+        ensay_start, column_names, first_data = self.detect_ensay_start(master_column, scale)
+        if ensay_start is None:
+            error_signal.emit("Inicio no encontrado")
+            return None
         ensay_start_date = ensay_start[0]
         if not isinstance(ensay_start[0], datetime):
             ensay_start_date = parse(ensay_start[0])
