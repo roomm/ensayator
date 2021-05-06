@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>Ensayator</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/imgs/resources/ico.ico</normaloff>:/imgs/resources/ico.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="btnLoadFile">
     <property name="geometry">
@@ -261,7 +265,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>v2.0.2</string>
+     <string>v2.2.0</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="sbTotalEnsay">
@@ -436,7 +440,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Escala señal</string>
+     <string>Ini. Diff. señal</string>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="sbScale">
@@ -466,11 +470,11 @@
     <property name="title">
      <string>About</string>
     </property>
-    <addaction name="actionCreator"/>
+    <addaction name="actionAuthor"/>
    </widget>
    <addaction name="menuAbout"/>
   </widget>
-  <action name="actionCreator">
+  <action name="actionAuthor">
    <property name="text">
     <string>Author</string>
    </property>
@@ -491,6 +495,8 @@
   <tabstop>btnCalc</tabstop>
   <tabstop>tblPreview</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

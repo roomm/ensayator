@@ -14,16 +14,30 @@ class CalculateTaskThread(QtCore.QThread):
     def run(self):
         result = None
         try:
-            result = self.mw.el.calculate_ensys(
-                self.mw.cbSelectColumn.currentText(),
-                self.mw.sbScale.value(),
-                self.mw.sbDuration.value(),
-                self.mw.sbOffset.value(),
-                int(self.mw.txtCycles.text()),
-                self.mw.txtOutName.text(),
-                self.notifyProgress,
-                self.task_failed
-            )
+            if self.mw.cbEnableRepetitions.isChecked():
+                result = self.mw.el.calculate_ensys_cyclic(
+                    self.mw.cbSelectColumn.currentText(),
+                    self.mw.sbScale.value(),
+                    self.mw.sbDuration.value(),
+                    self.mw.sbOffset.value(),
+                    int(self.mw.txtCycles.text()),
+                    self.mw.sbRepetitions.value(),
+                    self.mw.sbWaiting.value(),
+                    self.mw.txtOutName.text(),
+                    self.notifyProgress,
+                    self.task_failed
+                )
+            else:
+                result = self.mw.el.calculate_ensys(
+                    self.mw.cbSelectColumn.currentText(),
+                    self.mw.sbScale.value(),
+                    self.mw.sbDuration.value(),
+                    self.mw.sbOffset.value(),
+                    int(self.mw.txtCycles.text()),
+                    self.mw.txtOutName.text(),
+                    self.notifyProgress,
+                    self.task_failed
+                )
         except Exception as e:
             self.task_failed.emit(str(e))
         if result:

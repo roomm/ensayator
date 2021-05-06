@@ -1,10 +1,9 @@
 import os
-
 from openpyxl import load_workbook, Workbook
 from dateutil.parser import parse
 from datetime import timedelta, datetime
 from pathlib import Path
-import time
+from core.helper import calc_secs_duration
 
 
 class ExcelLogic:
@@ -95,6 +94,33 @@ class ExcelLogic:
             signal.emit([int((row_idx + 1) / total_rows_to_iter * 100), ensay_rows])
         return ensay_results
 
+    @classmethod
+    def generate_excel_files(cls, column_names, out_name, ensays_dates, ensay_results, signal, num_ensays=None):
+        Path("ensay_outputs").mkdir(exist_ok=True, parents=True)
+        results_statics = []
+        for eidx, edr in ensay_results.items():
+            if not edr:
+                continue
+            wb = Workbook(write_only=True)
+            ws = wb.create_sheet()
+            ws.append(column_names)
+            for dr in edr:
+                ws.append(dr)
+            if num_ensays is not None:
+                wb.save("ensay_outputs" + os.sep + f"{out_name}_cycl_{int((eidx / num_ensays)) + 1}_{eidx % num_ensays + 1}.xlsx")
+            else:
+                wb.save("ensay_outputs" + os.sep + f"{out_name}_{eidx + 1}.xlsx")
+
+            last_tm = None
+            if isinstance(edr[-1][0], datetime):
+                last_tm = edr[-1][0]
+            elif edr[-1][0] is not None:
+                last_tm = parse(edr[-1][0])
+            results_statics.append([ensays_dates[eidx][0], last_tm, ensays_dates[eidx][2], len(edr)])
+            signal.emit([int((eidx + 1) / len(ensay_results) * 100), ensays_dates])
+        signal.emit([100, ensays_dates])
+        return results_statics
+
     def calculate_ensys(self, master_column, scale, duration, offset, num_ensays, out_name, signal, error_signal):
         ensay_start, column_names, first_data = self.detect_ensay_start(master_column, scale)
         if ensay_start is None:
@@ -112,38 +138,39 @@ class ExcelLogic:
             end_date = parse(end_date.strftime("%Y-%m-%d %H:%M:00"))
             ensays_dates.append((start_date, end_date, st_wo_offset))
 
-        first_data_time = first_data[0]
-        if not isinstance(first_data_time, datetime):
-            first_data_time = parse(first_data_time)
-        z_time = time.mktime(first_data_time.timetuple())
-
-        st_time = time.mktime(ensays_dates[0][0].timetuple())
-        nd_time = time.mktime(ensays_dates[0][1].timetuple())
-        dur = int(nd_time - st_time)
-        z_dur = int(st_time - z_time)
+        dur = calc_secs_duration(ensays_dates[0][0], ensays_dates[0][1])
+        z_dur = calc_secs_duration(first_data[0], ensays_dates[0][0])
 
         total_rows_to_iter = (z_dur * 4) + (dur * 4 * num_ensays)
 
         ensay_results = self.generate_ensays_data(ensays_dates, total_rows_to_iter, signal)
+        results_statics = self.generate_excel_files(column_names, out_name, ensays_dates, ensay_results, signal)
+        return results_statics
 
-        Path("ensay_outputs").mkdir(exist_ok=True, parents=True)
-        results_statics = []
-        for eidx, edr in ensay_results.items():
-            if not edr:
-                continue
-            wb = Workbook(write_only=True)
-            ws = wb.create_sheet()
-            ws.append(column_names)
-            for dr in edr:
-                ws.append(dr)
-            wb.save("ensay_outputs" + os.sep + f"{out_name}_{eidx + 1}.xlsx")
+    def calculate_ensys_cyclic(self, master_column, scale, duration, offset, num_ensays, total_cycles, wait_time, out_name, signal, error_signal):
+        ensay_start, column_names, first_data = self.detect_ensay_start(master_column, scale)
+        if ensay_start is None:
+            error_signal.emit("Inicio no encontrado")
+            return None
+        ensay_start_date = ensay_start[0]
+        if not isinstance(ensay_start[0], datetime):
+            ensay_start_date = parse(ensay_start[0])
 
-            last_tm = None
-            if isinstance(edr[-1][0], datetime):
-                last_tm = edr[-1][0]
-            elif edr[-1][0] is not None:
-                last_tm = parse(edr[-1][0])
-            results_statics.append([ensays_dates[eidx][0], last_tm, ensays_dates[eidx][2], len(edr)])
-            signal.emit([int((eidx + 1) / len(ensay_results) * 100), ensays_dates])
-        signal.emit([100, ensays_dates])
+        ensays_dates = []
+        for cyle_num in range(0, total_cycles):
+            for num in range(1, num_ensays + 1):
+                st_wo_offset = ensay_start_date + timedelta(minutes=(duration * (num - 1))) + timedelta(minutes=(wait_time * cyle_num)) + timedelta(minutes=(num_ensays * duration * cyle_num))
+                end_wo_offset = st_wo_offset + timedelta(minutes=duration)
+                start_date = st_wo_offset - timedelta(minutes=offset)
+                start_date = parse(start_date.strftime("%Y-%m-%d %H:%M:00"))
+                end_date = st_wo_offset + timedelta(minutes=(duration + offset))
+                end_date = parse(end_date.strftime("%Y-%m-%d %H:%M:00"))
+                ensays_dates.append((start_date, end_date, st_wo_offset, end_wo_offset))
+
+        dur = calc_secs_duration(ensays_dates[0][0], ensays_dates[0][1])
+        z_dur = calc_secs_duration(first_data[0], ensays_dates[0][0])
+        total_rows_to_iter = (z_dur * 4) + (dur * 4 * num_ensays * total_cycles) + (4 * wait_time * 60 * total_cycles)
+
+        ensay_results = self.generate_ensays_data(ensays_dates, total_rows_to_iter, signal)
+        results_statics = self.generate_excel_files(column_names, out_name, ensays_dates, ensay_results, signal, num_ensays)
         return results_statics

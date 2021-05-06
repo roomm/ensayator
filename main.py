@@ -13,23 +13,22 @@ from workers.calculate import CalculateTaskThread
 from core.excel_logic import ExcelLogic
 import time
 from datetime import datetime
-from views.app_icon import create_app_icon
+from core.helper import calc_secs_duration
 import PyQt5.sip
+import faulthandler
 
+faulthandler.enable()
 
-# https://stackoverflow.com/questions/55819330/catching-exceptions-raised-in-qapplication
 
 class Ensayator(Ui_MainWindow):
     def __init__(self, dialog):
         Ui_MainWindow.__init__(self)
         self.setupUi(dialog)
 
-        icon = create_app_icon()
-        MainWindow.setWindowIcon(icon)
         self.btnLoadFile.clicked.connect(self.load_file)
         self.btnCalc.clicked.connect(self.execute_calc)
         self.sbTotalEnsay.valueChanged.connect(self.calc_cycles)
-        # self.cbEnableRepetitions.stateChanged.connect(self.set_repetitions_state)
+        self.cbEnableRepetitions.stateChanged.connect(self.set_repetitions_state)
         self.txtCycles.setReadOnly(True)
         self.file = None
         self.p_dialog = None
@@ -40,6 +39,7 @@ class Ensayator(Ui_MainWindow):
         self.startCalcAt = None
         self.set_input_state(False, False)
         self.set_progress_state(False)
+        self.set_repetitions_state()
         self.intervalSet = False
 
     def calc_cycles(self):
@@ -70,6 +70,7 @@ class Ensayator(Ui_MainWindow):
         self.txtOutName.setEnabled(state)
         self.btnCalc.setEnabled(calc_state)
         self.txtCycles.setEnabled(state)
+        self.set_repetitions_state()
 
     def set_repetitions_state(self):
         state = self.cbEnableRepetitions.isChecked()
@@ -141,10 +142,7 @@ class Ensayator(Ui_MainWindow):
         progress = int(msg[0])
         self.pbProgress.setValue(progress)
         current = datetime.now()
-        st_time = time.mktime(self.startCalcAt.timetuple())
-        nd_time = time.mktime(current.timetuple())
-
-        elapsed = int(nd_time - st_time)
+        elapsed = calc_secs_duration(self.startCalcAt, current)
         self.lblDuration.setText(time.strftime('%H:%M:%S', time.gmtime(elapsed)))
 
         if progress > 0:
@@ -155,11 +153,7 @@ class Ensayator(Ui_MainWindow):
         self.intervalSet = True
         out_rows = [["#", "SIN MARGEN", "START", "END", "DURATION"]]
         for num, ors in enumerate(ensay_rows):
-            st_rw = ors[0]
-            nd_rw = ors[1]
-            st_time = time.mktime(st_rw.timetuple())
-            nd_time = time.mktime(nd_rw.timetuple())
-            dur = int(nd_time - st_time) / 60
+            dur = calc_secs_duration(ors[0], ors[1])
             no_margin = ors[2].strftime("%Y/%m/%d %H:%M:%S")
             start = ors[0].strftime("%Y/%m/%d %H:%M:%S")
             end = ""

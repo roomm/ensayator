@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import views.resources as resources_rc
 
 
 class Ui_MainWindow(object):
@@ -17,6 +18,9 @@ class Ui_MainWindow(object):
         MainWindow.resize(1003, 640)
         MainWindow.setMinimumSize(QtCore.QSize(1003, 640))
         MainWindow.setMaximumSize(QtCore.QSize(1003, 640))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/imgs/resources/ico.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.btnLoadFile = QtWidgets.QPushButton(self.centralwidget)
@@ -65,14 +69,14 @@ class Ui_MainWindow(object):
         self.label_6.setObjectName("label_6")
         self.lblEta = QtWidgets.QLabel(self.centralwidget)
         self.lblEta.setGeometry(QtCore.QRect(910, 540, 81, 20))
-        self.lblEta.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lblEta.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lblEta.setObjectName("lblEta")
         self.lblEtaTitle = QtWidgets.QLabel(self.centralwidget)
         self.lblEtaTitle.setGeometry(QtCore.QRect(700, 540, 171, 17))
         self.lblEtaTitle.setObjectName("lblEtaTitle")
         self.lblDuration = QtWidgets.QLabel(self.centralwidget)
         self.lblDuration.setGeometry(QtCore.QRect(910, 580, 81, 20))
-        self.lblDuration.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lblDuration.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lblDuration.setObjectName("lblDuration")
         self.lblDurationTitle = QtWidgets.QLabel(self.centralwidget)
         self.lblDurationTitle.setGeometry(QtCore.QRect(700, 580, 171, 17))
@@ -136,9 +140,9 @@ class Ui_MainWindow(object):
         self.menuAbout = QtWidgets.QMenu(self.menubar)
         self.menuAbout.setObjectName("menuAbout")
         MainWindow.setMenuBar(self.menubar)
-        self.actionCreator = QtWidgets.QAction(MainWindow)
-        self.actionCreator.setObjectName("actionCreator")
-        self.menuAbout.addAction(self.actionCreator)
+        self.actionAuthor = QtWidgets.QAction(MainWindow)
+        self.actionAuthor.setObjectName("actionAuthor")
+        self.menuAbout.addAction(self.actionAuthor)
         self.menubar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -170,7 +174,7 @@ class Ui_MainWindow(object):
         self.lblEtaTitle.setText(_translate("MainWindow", "Tiempo restante:"))
         self.lblDuration.setText(_translate("MainWindow", "00:00:00"))
         self.lblDurationTitle.setText(_translate("MainWindow", "Tiempo transcurrido:"))
-        self.label_7.setText(_translate("MainWindow", "v2.0.2"))
+        self.label_7.setText(_translate("MainWindow", "v2.2.0"))
         self.label_8.setText(_translate("MainWindow", "min"))
         self.label_9.setText(_translate("MainWindow", "min"))
         self.label_10.setText(_translate("MainWindow", "hrs"))
@@ -179,13 +183,14 @@ class Ui_MainWindow(object):
         self.lblWaitingUnit.setText(_translate("MainWindow", "min"))
         self.lblWaiting.setText(_translate("MainWindow", "Tiempo Espera"))
         self.lblRepetitions.setText(_translate("MainWindow", "Repeticiones"))
-        self.label_12.setText(_translate("MainWindow", "Escala señal"))
+        self.label_12.setText(_translate("MainWindow", "Ini. Diff. señal"))
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
-        self.actionCreator.setText(_translate("MainWindow", "Author"))
+        self.actionAuthor.setText(_translate("MainWindow", "Author"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
