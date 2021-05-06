@@ -3,7 +3,7 @@ import math
 import tempfile
 import traceback
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from views.ensayator_ui import Ui_MainWindow
 from views.models.table_models import TableModel
 from dialogs.in_progress_dialog import InProgressDialog
@@ -29,6 +29,7 @@ class Ensayator(Ui_MainWindow):
         self.btnCalc.clicked.connect(self.execute_calc)
         self.sbTotalEnsay.valueChanged.connect(self.calc_cycles)
         self.cbEnableRepetitions.stateChanged.connect(self.set_repetitions_state)
+        self.actionAuthor.triggered.connect(self.show_author)
         self.txtCycles.setReadOnly(True)
         self.file = None
         self.p_dialog = None
@@ -41,6 +42,13 @@ class Ensayator(Ui_MainWindow):
         self.set_progress_state(False)
         self.set_repetitions_state()
         self.intervalSet = False
+
+    def show_author(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Roman Boix :)")
+        msg.setWindowTitle("Autor")
+        x = msg.exec_()
 
     def calc_cycles(self):
         try:
